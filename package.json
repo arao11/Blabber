@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/arao11/Blabber/issues"
   },
-  "homepage": "https://github.com/arao11/Blabber#readme"
+  "homepage": "https://github.com/arao11/Blabber#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
 }
