@@ -70,7 +70,7 @@ app.delete('/blabs/:id', (req, res) => {
 
   return res.status(404).send({
     succes: 'false',
-    message: 'Blab not found';
+    message: 'Blab not found'
   })
 
 });
