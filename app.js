@@ -54,6 +54,27 @@ app.post('/blabs', (req, res) => {
   res.status(201).send(blab);
 });
 
+
+app.delete('/blabs/:id', (req, res) => {
+  var id = parseInt(req.params.id);
+  var i;
+  for (i = 0; i < currId; i++) {
+    if (blabArray[i].id == id) {
+      blabArray.splice(i, 1);
+      return res.status(200).send({
+        success: 'true',
+        message: 'Blab deleted successfully'
+      });
+    }
+  }
+
+  return res.status(404).send({
+    succes: 'false',
+    message: 'Blab not found';
+  })
+
+});
+
 app.listen(PORT, () => {
   console.log('Server running on port ' + PORT);
 });
