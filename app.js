@@ -16,6 +16,7 @@ function BlabModel (id, postTime, author, message) {
   this.message = message;
 }
 
+//TODO: temporary array, need to use mongodb
 var blabArray = [];
 
 app.get('/blabs', (req, res) => {
@@ -48,7 +49,7 @@ app.post('/blabs', (req, res) => {
       message: 'Message is required'
     });
   }
-  const blab = new BlabModel(currId, Date.now(), req.body.author, req.body.message);
+  const blab = new BlabModel(currId, process.uptime(), req.body.author, req.body.message);
   blabArray[currId] = blab;
   currId++;
   res.status(201).send(blab);
@@ -70,11 +71,11 @@ app.delete('/blabs/:id', (req, res) => {
 
   return res.status(404).send({
     succes: 'false',
-    message: 'Blab not found';
+    message: 'Blab not found'
   })
 
 });
 
 app.listen(PORT, () => {
-  console.log('Server running on port ' + PORT);
+  console.log('Now listening on port ' + PORT);
 });
