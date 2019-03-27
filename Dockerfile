@@ -1,7 +1,9 @@
 FROM node
 WORKDIR /src
 COPY package* ./
+RUN npm install -g nodemon
 RUN npm install
 COPY app.js .
+EXPOSE 3000
 
-CMD ["node", "app.js"]
+CMD npm run dev
