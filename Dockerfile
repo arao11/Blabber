@@ -1,9 +1,10 @@
 FROM node
-WORKDIR /src
-COPY package* ./
-RUN npm install -g nodemon
-RUN npm install
-COPY app.js .
-EXPOSE 3000
 
+RUN mkdir /src
+WORKDIR /src
+
+COPY package* ./
+RUN npm install --quiet
+
+EXPOSE 3000
 CMD npm run dev

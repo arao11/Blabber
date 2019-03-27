@@ -7,8 +7,6 @@ app.use(bodyParser.json());
 
 const PORT = 3000;
 
-var currId = 0;
-
 function BlabModel (id, postTime, author, message) {
   this.id = id;
   this.postTime = postTime;
@@ -18,25 +16,24 @@ function BlabModel (id, postTime, author, message) {
 
 //TODO: temporary array, need to use mongodb
 var blabArray = [];
+var currId = 0;
 
 app.get('/blabs', (req, res) => {
-  if (!req.body.createdSince) {
-    return res.status(400).send({
-      success: 'false',
-      message: 'changed'
-    });
-  }
-  var i;
-  for (i = 0; i < currId; i++) {
-    if (blabArray[i].postTime >= req.body.createdSince) {
-      res.status(200).send(blabArray.slice(i));
+  console.log("get");
+  if (req.query.createdSince) {
+    for (let i = 0; i < currId; i++) {
+      if (blabArray[i].postTime >= req.query.createdSince) {
+        res.status(200).send(blabArray.slice(i));
+      }
     }
   }
+  
+  res.status(200).send(blabArray);
 });
 
 
 app.post('/blabs', (req, res) => {
-  //console.log("post");
+  console.log("post");
   if (!req.body.author) {
     return res.status(400).send({
       success: 'false',
@@ -49,8 +46,9 @@ app.post('/blabs', (req, res) => {
       message: 'Message is required'
     });
   }
-  const blab = new BlabModel(currId, process.uptime(), req.body.author, req.body.message);
-  blabArray[currId] = blab;
+  var date = new Date();
+  const blab = new BlabModel(currId, date.getHours(), req.body.author, req.body.message);
+  blabArray.push(blab);
   currId++;
   res.status(201).send(blab);
 });
@@ -58,8 +56,7 @@ app.post('/blabs', (req, res) => {
 
 app.delete('/blabs/:id', (req, res) => {
   var id = parseInt(req.params.id);
-  var i;
-  for (i = 0; i < currId; i++) {
+  for (let i = 0; i < currId; i++) {
     if (blabArray[i].id == id) {
       blabArray.splice(i, 1);
       return res.status(200).send({
