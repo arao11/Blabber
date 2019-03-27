@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  api:
+    image: blabber
+    ports:
+      - 3000:3000
+    labels:
+      - "traefik.backend=api"
+      - "traefik.frontend.rule=PathPrefix:/api"
+      - "traefik.port=3000"
+      - "traefik.frontend.rule=PathPrefixStrip:/api"
+
+
+  reverse-proxy:
+    image: traefik
+    command: --api --docker
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  client:
+    image: vtcs2304s19/blabber-client
+    labels:
+      - "traefik.backend=client"
+      - "traefik.port=80"
+      - "traefik.frontend.rule=Host:client.docker.localhost"
+      - "traefik.frontend.rule=PathPrefix:/"
+
+
+    

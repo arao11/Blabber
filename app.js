@@ -23,7 +23,7 @@ app.get('/blabs', (req, res) => {
   if (!req.body.createdSince) {
     return res.status(400).send({
       success: 'false',
-      message: 'createdSince is required'
+      message: 'changed'
     });
   }
   var i;
