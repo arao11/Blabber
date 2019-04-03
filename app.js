@@ -1,11 +1,34 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongodb = require('mongodb');
+const assert = require('assert');
 
 var app = express();
-
 app.use(bodyParser.json());
 
+
 const PORT = 3000;
+
+var MongoClient = mongodb.MongoClient;
+var db;
+
+MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, function(err, database) {
+  if(err) return console.error(err);
+  db = database;
+
+  app.listen(PORT, () => {
+    console.log('Now listening on port ' + PORT);
+  });
+});
+
+// class BlabModel {
+//   constructor(id, postTime, author, message) {
+//     this.id = id;
+//     this.postTime = postTime;
+//     this.author = author;
+//     this.message = message;
+//   }
+// }
 
 function BlabModel (id, postTime, author, message) {
   this.id = id;
@@ -14,26 +37,35 @@ function BlabModel (id, postTime, author, message) {
   this.message = message;
 }
 
-//TODO: temporary array, need to use mongodb
-var blabArray = [];
-var currId = 0;
-
 app.get('/blabs', (req, res) => {
-  console.log("get");
-  if (req.query.createdSince) {
-    for (let i = 0; i < currId; i++) {
-      if (blabArray[i].postTime >= req.query.createdSince) {
-        res.status(200).send(blabArray.slice(i));
-      }
-    }
+  console.log('get');
+  var time = req.query.createdSince;
+  if (time) {
+    console.log('found');
+    var query = {postTime: { $gt: time}};
+
+    db.collection("replicaset_mongo_client_collection")
+      .find({}, function(err, result) {
+      
+      assert.equal(null, err);
+
+      docs.each(function(err, docs) {
+        if(docs) {
+          res.status(201).send(docs);
+        }
+        else {
+          
+        }
+      });
+    });
+  } else {
+    console.log('found2');
   }
-  
-  res.status(200).send(blabArray);
 });
 
 
 app.post('/blabs', (req, res) => {
-  console.log("post");
+  console.log('post');
   if (!req.body.author) {
     return res.status(400).send({
       success: 'false',
@@ -46,33 +78,38 @@ app.post('/blabs', (req, res) => {
       message: 'Message is required'
     });
   }
+
   var date = new Date();
-  const blab = new BlabModel(currId, date.getHours(), req.body.author, req.body.message);
-  blabArray.push(blab);
+  const blab = new BlabModel(currId.toString(), date.getTime() / 1000, req.body.author, req.body.message);
   currId++;
-  res.status(201).send(blab);
+  db.collection("replicaset_mongo_client_collection").insert([blab], function(err, result) {
+    assert.equal(null, err);
+
+    docs.each(function(err, docs) {
+      if(docs) {
+        res.status(201).send(docs);
+      }
+      else {
+      }
+    });
+  });
 });
 
 
 app.delete('/blabs/:id', (req, res) => {
-  var id = parseInt(req.params.id);
-  for (let i = 0; i < currId; i++) {
-    if (blabArray[i].id == id) {
-      blabArray.splice(i, 1);
-      return res.status(200).send({
-        success: 'true',
-        message: 'Blab deleted successfully'
-      });
-    }
-  }
-
-  return res.status(404).send({
-    succes: 'false',
-    message: 'Blab not found'
-  })
-
-});
-
-app.listen(PORT, () => {
-  console.log('Now listening on port ' + PORT);
+  var currId = req.params.id.toString();
+  
+  var query = {id: currId};
+  //var query = {};
+  db.collection("replicaset_mongo_client_collection").remove(query, function(err, docs) {
+    assert.equal(null, err);
+    docs.each(function(err, docs) {
+      if(docs) {
+        res.status(201).send(docs);
+      }
+      else {
+        res.status(404).send({message: 'Blab not found'});
+      }
+    });
+  });
 });

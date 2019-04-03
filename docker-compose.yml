@@ -1,19 +1,16 @@
 version: '3.7'
 
-
 services:
   api:
     image: blabber
-    ports:
-      - 3000:3000
+    #ports:
+    # - 3000:3000
     volumes:
       - ./:/src
-    # command:
-    #   - "npm run dev"
     labels:
-      - "traefik.backend=api"
-      - "traefik.frontend.rule=PathPrefix:/api"
-      - "traefik.frontend.rule=PathPrefixStrip:/api"
+      traefik.backend: api
+        - "traefik.frontend.rule=PathPrefix:/api"
+        - "traefik.frontend.rule=PathPrefixStrip:/api"
 
   reverse-proxy:
     image: traefik
@@ -31,3 +28,20 @@ services:
       - "traefik.frontend.rule=Host:client.docker.localhost"
       - "traefik.frontend.rule=PathPrefix:/"
       - "traefik.port=80"
+
+  tests:
+    image: vtcs2304s19/blabber-api-tests
+    environment:
+      SERVICE_NAME: api
+      API_PORT: "3000"
+      SLEEP_TIMER: "10"
+
+  mongo:
+    image: mongo
+    ports: 
+      - 27017:27017
+    volumes: 
+      - mongo-data:/data/
+volumes:
+  mongo-data:
+    
