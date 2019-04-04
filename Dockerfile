@@ -1,7 +1,7 @@
 FROM node
 
-RUN mkdir /src
-RUN mkdir /data
+#RUN mkdir /src
+#RUN mkdir /data
 WORKDIR /src
 
 COPY package* ./

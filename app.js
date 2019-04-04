@@ -13,6 +13,7 @@ var MongoClient = mongodb.MongoClient;
 var db;
 
 MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, function(err, database) {
+  console.log('connected');
   if(err) return console.error(err);
   db = database;
 
@@ -20,15 +21,6 @@ MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, function
     console.log('Now listening on port ' + PORT);
   });
 });
-
-// class BlabModel {
-//   constructor(id, postTime, author, message) {
-//     this.id = id;
-//     this.postTime = postTime;
-//     this.author = author;
-//     this.message = message;
-//   }
-// }
 
 function BlabModel (id, postTime, author, message) {
   this.id = id;
@@ -45,7 +37,7 @@ app.get('/blabs', (req, res) => {
     var query = {postTime: { $gt: time}};
 
     db.collection("replicaset_mongo_client_collection")
-      .find({}, function(err, result) {
+      .find(query, function(err, result) {
       
       assert.equal(null, err);
 
@@ -54,7 +46,7 @@ app.get('/blabs', (req, res) => {
           res.status(201).send(docs);
         }
         else {
-          
+          res.status(201).send(docs);
         }
       });
     });
