@@ -9,8 +9,7 @@ services:
       - ./:/src
     labels:
       traefik.backend: api
-        - "traefik.frontend.rule=PathPrefix:/api"
-        - "traefik.frontend.rule=PathPrefixStrip:/api"
+      traefik.frontend.rule: PathPrefixStrip:/api
 
   reverse-proxy:
     image: traefik
@@ -24,10 +23,9 @@ services:
   client:
     image: vtcs2304s19/blabber-client
     labels:
-      - "traefik.backend=client"
-      - "traefik.frontend.rule=Host:client.docker.localhost"
-      - "traefik.frontend.rule=PathPrefix:/"
-      - "traefik.port=80"
+      traefik.backend: client
+      traefik.frontend.rule: PathPrefix:/
+      traefik.port: 80
 
   tests:
     image: vtcs2304s19/blabber-api-tests
