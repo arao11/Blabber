@@ -19,7 +19,7 @@ var MongoClient = mongodb.MongoClient;
 var db;
 
 MongoClient.connect("mongodb://mongo:27017/blabber", { useNewUrlParser: true }, (err, database) => {
-  console.log('connected');
+  //console.log('connected');
   assert.equal(null, err);
   db = database.db("blabber");
 
@@ -39,24 +39,22 @@ function BlabModel (id, postTime, author, message) {
 
 app.get('/blabs', (req, res) => {
   //console.log('get');
-  var time;
-  if (req.query.createdSince) {
-    time = req.query.createdSince;
-  } else {
+  var time = req.query.createdSince;
+  if (!time) {
     time = 0;
   }
-  //var time = req.query.createdSince;
-    //console.log('found');
-    var query = {postTime: { $gt: time}};
+  console.log("TIME: " + time);
+  var query = {postTime: { $gte: time}};
 
-    var ret = db.collection("blabber").find(query, (err, result) => {
-      assert.equal(null, err);
-    })
-    if (ret == null) {
-      res.status(200).send([]);
-    } else {
-      res.status(200).send(ret.toArray());
-    }
+  var ret = db.collection("blabber").find(query, (err, result) => {
+    assert.equal(null, err);
+    //res.status(200).send(result);
+  })
+  if (ret == null) {
+    res.status(200).send([]);
+  } else {
+    res.status(200).send(ret.toArray());
+  }
 });
 
 
@@ -76,14 +74,14 @@ app.post('/blabs', (req, res) => {
   }
 
   var date = new Date();
-  const blab = new BlabModel(uuid(), date.getTime() / 1000, req.body.author, req.body.message);
-  db.collection("blabber").insertOne(blab, function(err, result) {
+  const blab = new BlabModel(uuid(), Math.floor(date.getTime() / 1000), req.body.author, req.body.message);
+  db.collection("blabber").insertOne(blab, (err, result) => {
     assert.equal(null, err);
-    console.log(blab);
-    setTimeout(() => {
-      res.status(201).send(blab);
-    }, 2000);
-    //res.status(201).send(blab);
+    //console.log(blab);
+    res.status(201).send(blab);
+    // setTimeout(() => {
+    //   res.status(201).send(blab);
+    // }, 2000);
   });
 });
 
@@ -91,9 +89,13 @@ app.post('/blabs', (req, res) => {
 app.delete('/blabs/:id', (req, res) => {
   var currId = req.params.id.toString();
   var query = {id: currId};
-  db.collection("blabber").remove(query, function(err, docs) {
+  var hasDeleted = false;
+  db.collection("blabber").deleteOne(query, function(err, docs) {
     assert.equal(null, err);
+    hasDelete = true;
     res.status(200).send("Blab deleted Successfully");
   });
-  res.status(404).send("Blab not found");
+  if (!hasDeleted) {
+    res.status(404).send("Blab not found");
+  }
 });

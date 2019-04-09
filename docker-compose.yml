@@ -14,9 +14,12 @@ services:
     image: blabber
     volumes:
       - ./:/src
+    depends_on:
+      - mongo
     labels:
       traefik.backend: api
       traefik.frontend.rule: PathPrefixStrip:/api
+    
 
   reverse-proxy:
     image: traefik
@@ -39,6 +42,7 @@ services:
     environment:
       SERVICE_NAME: api
       API_PORT: "3000"
+      SLEEP_TIMER: 10000
     depends_on:
       - api
 
