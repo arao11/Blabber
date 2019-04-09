@@ -7,12 +7,18 @@ const uuid = require('uuid/v1');
 var app = express();
 app.use(bodyParser.json());
 
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
+
 const PORT = 3000;
 
 var MongoClient = mongodb.MongoClient;
 var db;
 
-MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, function(err, database) {
+MongoClient.connect("mongodb://mongo:27017/blabber", { useNewUrlParser: true }, (err, database) => {
   console.log('connected');
   assert.equal(null, err);
   db = database.db("blabber");
@@ -43,13 +49,14 @@ app.get('/blabs', (req, res) => {
     //console.log('found');
     var query = {postTime: { $gt: time}};
 
-    db.collection("blabber")
-      .find(query).toArray(function(err, result) {
-      
+    var ret = db.collection("blabber").find(query, (err, result) => {
       assert.equal(null, err);
-
-      res.status(200).send(result);
-    });
+    })
+    if (ret == null) {
+      res.status(200).send([]);
+    } else {
+      res.status(200).send(ret.toArray());
+    }
 });
 
 
@@ -73,7 +80,10 @@ app.post('/blabs', (req, res) => {
   db.collection("blabber").insertOne(blab, function(err, result) {
     assert.equal(null, err);
     console.log(blab);
-    res.status(201).send(blab);
+    setTimeout(() => {
+      res.status(201).send(blab);
+    }, 2000);
+    //res.status(201).send(blab);
   });
 });
 

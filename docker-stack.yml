@@ -9,6 +9,8 @@ services:
     volumes: 
       - mongo-data:/data/db
       - mongo-config:/data/configdb
+    deploy:
+
 
   api:
     image: blabber
@@ -26,6 +28,9 @@ services:
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   client:
     image: vtcs2304s19/blabber-client
