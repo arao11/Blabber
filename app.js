@@ -18,11 +18,12 @@ const PORT = 3000;
 var MongoClient = mongodb.MongoClient;
 var db;
 
-MongoClient.connect("mongodb://mongo:27017/blabber", { useNewUrlParser: true }, (err, database) => {
+MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, (err, database) => {
   //console.log('connected');
   assert.equal(null, err);
   db = database.db("blabber");
 
+  db.createCollection('blabber', function(err, collection) {});
   //console.log(db);
 
   app.listen(PORT, () => {
@@ -43,18 +44,20 @@ app.get('/blabs', (req, res) => {
   if (!time) {
     time = 0;
   }
-  console.log("TIME: " + time);
   var query = {postTime: { $gte: time}};
 
-  var ret = db.collection("blabber").find(query, (err, result) => {
+  MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, (err, database) => {
+    //console.log('connected');
     assert.equal(null, err);
-    //res.status(200).send(result);
-  })
-  if (ret == null) {
-    res.status(200).send([]);
-  } else {
-    res.status(200).send(ret.toArray());
-  }
+    database.collection("blabber").find(query).toArray((err, result) => {
+      assert.equal(null, err);
+      res.status(200).send(result);
+    })
+  
+    //if (ret == null) {
+      //res.status(200).send([]);
+    //}
+  });
 });
 
 
