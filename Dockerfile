@@ -3,7 +3,9 @@ WORKDIR /src
 COPY package* ./
 RUN npm install --quiet
 EXPOSE 3000 27017
-CMD ["npm", "run", "dev"]; /mongod --dbpath ./data/db
+CMD ["npm", "run", "dev"]; 
+
+#/mongod --dbpath ./data/db
 
 #COPY . .
 #RUN mkdir /data
