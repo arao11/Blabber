@@ -1,3 +1,5 @@
+#docker-compose up
+
 version: '3.7'
 
 services:
@@ -14,7 +16,7 @@ services:
       - mongo-config:/data/configdb
 
   api:
-    image: blabber
+    image: arjunr11/blabber
     networks:
       - traefik-net
     volumes:
