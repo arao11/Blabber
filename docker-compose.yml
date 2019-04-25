@@ -17,6 +17,7 @@ services:
 
   api:
     image: arjunr11/blabber
+    #read_only: true
     networks:
       - traefik-net
     volumes:

@@ -6,6 +6,10 @@ services:
   mongo:
     image: mongo
     restart: always
+    environment:
+      PWD: /run/secrets/mongoPWD
+    secrets:
+      - mongoPWD
     networks:
       - traefik-net
     ports: 
@@ -24,6 +28,8 @@ services:
       - ./:/src
     networks:
       - traefik-net
+    secrets:
+      - mongoPWD
     deploy:
       replicas: 2
       labels:
@@ -77,3 +83,6 @@ volumes:
   mongo-data:
 networks:
   traefik-net:
+secrets:
+  mongoPWD:
+    file: ./DB_PASSWORD_FILE

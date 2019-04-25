@@ -39,12 +39,13 @@ function BlabModel (id, postTime, author, message) {
 }
 
 app.get('/blabs', (req, res) => {
-  //console.log('get');
+  console.log('get');
   var time = 0;
   if (req.query.createdSince) {
     time = parseInt(req.query.createdSince);
   }
   var query = {postTime: { $gte: time}};
+  //console.log("using query", query);
 
   db.collection("blabber").find(query).toArray((err, result) => {
     assert.equal(null, err);
@@ -56,16 +57,11 @@ app.get('/blabs', (req, res) => {
   // make a new docker compose for tests without volumes
   // fix 404 error for delete, call get before and if doesnt exist, return 404
 
-  // MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, (err, database) => {
-  //   //console.log('connected');
-  //   assert.equal(null, err);
-    
-  // });
 });
 
 
 app.post('/blabs', (req, res) => {
-  //console.log('post');
+  // console.log('post');
   if (!req.body.author) {
     return res.status(400).send({
       success: 'false',
