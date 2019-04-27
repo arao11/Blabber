@@ -10,6 +10,7 @@ services:
       PWD: /run/secrets/mongoPWD
     secrets:
       - mongoPWD
+      - mongoUSR
     networks:
       - traefik-net
     ports: 
@@ -24,6 +25,7 @@ services:
 
   api:
     image: arjunr11/blabber
+    read_only: true
     volumes:
       - ./:/src
     networks:
@@ -86,3 +88,4 @@ networks:
 secrets:
   mongoPWD:
     file: ./DB_PASSWORD_FILE
+  

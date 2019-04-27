@@ -17,7 +17,10 @@ services:
 
   api:
     image: arjunr11/blabber
-    #read_only: true
+    read_only: true
+    environment:
+      mongoUSR: /run/secrets/DB_PASSWORD_FILE
+      mongoPWD: /run/secrets/DB_PASSWORD_FILE
     networks:
       - traefik-net
     volumes:

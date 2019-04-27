@@ -18,7 +18,12 @@ const PORT = 3000;
 var MongoClient = mongodb.MongoClient;
 var db;
 
-MongoClient.connect("mongodb://mongo:27017", { useNewUrlParser: true }, (err, database) => {
+var username = process.env.mongoUSR;
+var password = process.env.mongoPWD;
+
+const url = encodeURI(`mongodb://{username}:{password}@mongo:27017`)
+
+MongoClient.connect(url, { useNewUrlParser: true }, (err, database) => {
   //console.log('connected');
   assert.equal(null, err);
   db = database.db("blabber");
