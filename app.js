@@ -22,9 +22,9 @@ var db;
 var username = process.env.mongoUSR;
 var password = fs.readFileSync(process.env.mongoPWD).toString();
 
-console.log('password: ' + password);
+//console.log('password: ' + password);
 
-//const url = encodeURI(`mongodb://${username}:${password}@mongo:27017`)
+const url = encodeURI(`mongodb://${username}:${password}@mongo:27017`)
 
 MongoClient.connect(url, { useNewUrlParser: true }, (err, database) => {
   //console.log('connected');
