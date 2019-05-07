@@ -5,6 +5,9 @@ version: '3.7'
 services:
   mongo:
     image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
     networks:
       - traefik-net
     command: mongod --dbpath ./data/db
@@ -17,10 +20,12 @@ services:
 
   api:
     image: arjunr11/blabber
+    environment:
+      PWD: mongoPWD
     read_only: true
     environment:
-      mongoUSR: /run/secrets/DB_PASSWORD_FILE
-      mongoPWD: /run/secrets/DB_PASSWORD_FILE
+      mongoUSR: "root"
+      mongoPWD: DB_PASSWORD_FILE
     networks:
       - traefik-net
     volumes:
@@ -57,4 +62,7 @@ volumes:
   mongo-config:
 networks:
   traefik-net:
+secrets:
+  mongoPWD:
+    file: ./DB_PASSWORD_FILE
     

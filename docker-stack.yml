@@ -7,10 +7,10 @@ services:
     image: mongo
     restart: always
     environment:
-      PWD: /run/secrets/mongoPWD
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
     secrets:
       - mongoPWD
-      - mongoUSR
     networks:
       - traefik-net
     ports: 
@@ -26,6 +26,9 @@ services:
   api:
     image: arjunr11/blabber
     read_only: true
+    environment:
+      mongoUSR: "root"
+      mongoPWD: DB_PASSWORD_FILE
     volumes:
       - ./:/src
     networks:

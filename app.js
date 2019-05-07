@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongodb = require('mongodb');
 const assert = require('assert');
 const uuid = require('uuid/v1');
+const fs = require('fs');
 
 var app = express();
 app.use(bodyParser.json());
@@ -19,9 +20,11 @@ var MongoClient = mongodb.MongoClient;
 var db;
 
 var username = process.env.mongoUSR;
-var password = process.env.mongoPWD;
+var password = fs.readFileSync(process.env.mongoPWD).toString();
 
-const url = encodeURI(`mongodb://{username}:{password}@mongo:27017`)
+console.log('password: ' + password);
+
+//const url = encodeURI(`mongodb://${username}:${password}@mongo:27017`)
 
 MongoClient.connect(url, { useNewUrlParser: true }, (err, database) => {
   //console.log('connected');
