@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongodb = require('mongodb');
 const assert = require('assert');
 const uuid = require('uuid/v1');
+const Prometheus = require('prom-client');
 const fs = require('fs');
 
 var app = express();
@@ -86,6 +87,7 @@ app.post('/blabs', (req, res) => {
   var date = new Date();
   const blab = new BlabModel(uuid(), Math.floor(date.getTime() / 1000), req.body.author, req.body.message);
   db.collection("blabber").insertOne(blab, (err, result) => {
+    blabCounter.inc();
     assert.equal(null, err);
     //console.log(blab);
     res.status(201).send(blab);
@@ -109,3 +111,37 @@ app.delete('/blabs/:id', (req, res) => {
     res.status(200).send("Blab deleted Successfully");
   });
 });
+
+var blabCounter = new Prometheus.Counter({
+  name: 'total_blabs_created_count',
+  help: 'Number of blabs that have been made'
+})
+
+var collectDefaultMetrics = Prometheus.collectDefaultMetrics;
+collectDefaultMetrics({ timeout: 5000 });
+
+app.get('/metrics', (req, res) => {
+  //res.status(200).send(Prometheus.register.metrics())
+  const end = blabCounter.startTimer();
+  res.set('Content-Type', Prometheus.register.contentType)
+  res.end(Prometheus.register.metrics())
+  end();
+
+  // httpRequestDurationMicroseconds
+  // .labels(req.route.path)
+  // .observe(responseTimeInMs)
+
+  // blabCounter
+  // .labels(req.route.path)
+  // .observe(responseTimeInMs)
+
+  
+})
+
+var httpRequestDurationMicroseconds = new Prometheus.Histogram({
+  name: 'http_request_duration_ms',
+  help: 'Duration of HTTP requests in ms',
+  labelNames: ['route'],
+  // buckets for response time from 0.1ms to 500ms
+  buckets: [0.10, 5, 15, 50, 100, 200, 300, 400, 500]
+})
